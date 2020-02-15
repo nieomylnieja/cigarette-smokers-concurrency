@@ -11,18 +11,18 @@
 int main() {
     srandom(time(NULL));
 
-    int agent_smoker_queues[SMOKERS];
-    create_mqs(agent_smoker_queues, SMOKERS);
     int smokers_exchange_queues[PRODUCTS];
-    create_mqs(smokers_exchange_queues, PRODUCTS);
+    int agent_smoker_queues[SMOKERS];
+    int wallets[SMOKERS];
 
-    int block_all_transactions = create_sem_set(1);
-    int wallets = create_sem_set(3);
+    create_mqs(smokers_exchange_queues, PRODUCTS);
+    create_mqs(agent_smoker_queues, SMOKERS);
+    create_sem_sets(wallets, SMOKERS, 2);
 
     if (fork() == 0) {
         struct Agent agent;
         agent.smoker_queues = agent_smoker_queues;
-        agent.block_transactions = block_all_transactions;
+        agent.wallets = wallets;
 
         while(1) {
             set_price(&agent);
@@ -30,37 +30,29 @@ int main() {
         }
     }
 
-    int cigarette_case[3] = {2, 2, 2};
     int smoker_type = products[0].id;
-    int wallet_id = 0;
-    int queue_id = 0;
 
     for(int i = 1; i < SMOKERS; i++) {
         if (fork() == 0) {
             smoker_type = products[i].id;
-            wallet_id = i;
-            queue_id = i;
             break;
         }
     }
 
     struct Smoker smoker;
 
-    cigarette_case[smoker_type] = 1;
+    int cigarette_case[3] = {2, 2, 2};
+    cigarette_case[smoker_type] = INFINITE;
 
     smoker.id = getpid();
     smoker.smoker_type = smoker_type;
-    smoker.agent_queue = *(agent_smoker_queues + queue_id);
-    smoker.agent_block = block_all_transactions;
+    smoker.agent_queue = *(agent_smoker_queues + smoker_type);
     smoker.cigarette_case = cigarette_case;
-
-    smoker.wallet.sem_id = wallets;
-    smoker.wallet.sem_num = wallet_id;
+    smoker.wallet_id = *(wallets + smoker_type);
 
     while(1) {
         update_prices(&smoker);
         sleep(1);
         smoke(&smoker);
-
     }
 }

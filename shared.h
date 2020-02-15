@@ -3,6 +3,9 @@
 
 #define PRODUCTS 3
 #define SMOKERS PRODUCTS
+#define INFINITE 1
+#define WALLET_BLOCK 0
+#define WALLET_MONEY 1
 
 struct Product {
     int id;
@@ -17,6 +20,8 @@ struct Msg {
 };
 
 // SEMAPHORE OPERATIONS
+void create_sem_sets(int *buf, int num_sem_sets, int num_sems);
+
 int create_sem_set(int num_sems);
 
 void set_sem_val(int sem_id, int sem_num, int value);

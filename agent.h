@@ -6,11 +6,15 @@ struct Agent {
     int paper_price;
     int matches_price;
     int *smoker_queues;
-    int block_transactions;
+    int *wallets;
 };
 
+void block_all_wallets(int *wallets);
+
 void set_price(struct Agent *agent);
+
 void wait();
-void check_if_received_by_all(struct Agent *agent);
+
+void make_sure_everyone_was_informed(struct Agent *agent);
 
 #endif //SMOKERS_AGENT_H

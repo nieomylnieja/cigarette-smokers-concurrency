@@ -17,7 +17,7 @@ void update_prices(struct Smoker *smoker) {
 }
 
 void sell(struct Smoker *smoker) {
-    if (get_sem_val(smoker->agent_block, 0) == 0) {
+    if (get_sem_val(smoker->wallet_id, WALLET_BLOCK) == 0) {
         printf("%s smoker sold \n", products[smoker->smoker_type].name);
     } else {
         printf("%s smoker IS BLOCKED\n", products[smoker->smoker_type].name);
@@ -29,7 +29,7 @@ void send_request(int msqid, int smoker_id) {
 }
 
 void buy(struct Smoker *smoker) {
-    if (get_sem_val(smoker->agent_block, 0) == 0) {
+    if (get_sem_val(smoker->wallet_id, WALLET_BLOCK) == 0) {
         printf("%s smoker bought \n", products[smoker->smoker_type].name);
     } else {
         printf("%s smoker IS BLOCKED\n", products[smoker->smoker_type].name);
@@ -50,7 +50,7 @@ int smoke_condition_satisfied(struct Smoker *smoker) {
             return 0;
         }
     }
-    if (get_sem_val(smoker->agent_block, 0) == 0) {
+    if (get_sem_val(smoker->wallet_id, WALLET_BLOCK) == 0) {
         return 1;
     }
     return 0;
@@ -58,9 +58,8 @@ int smoke_condition_satisfied(struct Smoker *smoker) {
 
 void create_cigarette(struct Smoker *smoker) {
     for (int i = 0; i < PRODUCTS; i++) {
-        if (*(smoker->cigarette_case + i) != smoker->smoker_type) {
-            printf("%d");
-            *(smoker->cigarette_case + i) -= 0;
+        if (i != smoker->smoker_type) {
+            *(smoker->cigarette_case + i) -= 1;
         }
     }
 }

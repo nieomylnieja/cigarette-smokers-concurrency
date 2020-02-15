@@ -1,18 +1,12 @@
 #ifndef SMOKERS_SMOKERS_H
 #define SMOKERS_SMOKERS_H
 
-struct Wallet {
-    int sem_id;
-    int sem_num;
-};
-
 struct Smoker {
     int id;
     int smoker_type;
     int agent_queue;
-    int agent_block;
     int *cigarette_case;
-    struct Wallet wallet;
+    int wallet_id;
     int *products_queues;
 };
 

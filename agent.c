@@ -4,7 +4,7 @@
 #include "shared.h"
 
 void set_price(struct Agent *agent) {
-    set_sem_val(agent->block_transactions,0, 1);
+    block_all_wallets(agent->wallets);
 
     int product = get_random(0,2);
     int price = get_random(1,5);
@@ -19,22 +19,25 @@ void set_price(struct Agent *agent) {
 
     send_msg_to_many(agent->smoker_queues, product, price);
 
-    check_if_received_by_all(agent);
-
-    set_sem_val(agent->block_transactions, 0,0);
+    make_sure_everyone_was_informed(agent);
 }
 
-void check_if_received_by_all(struct Agent *agent) {
-    int all_empty = 0;
-    while(all_empty == 0) {
-        int empty = 0;
+void block_all_wallets(int *wallets) {
+    for (int i = 0; i < SMOKERS; i++) {
+        set_sem_val(*(wallets + i), WALLET_BLOCK, 1);
+    }
+}
+
+void make_sure_everyone_was_informed(struct Agent *agent) {
+    int checked[3] = {0, 0, 0};
+    int empty = 0;
+    while(empty != 3) {
         for (int i = 0; i < SMOKERS; i++) {
-            if (check_queue_size(agent->smoker_queues[i]) == 0) {
+            if (check_queue_size(agent->smoker_queues[i]) == 0 && checked[i] == 0) {
+                set_sem_val(*(agent->wallets + i), WALLET_BLOCK, 0);
+                checked[i] = 1;
                 empty++;
             }
-        }
-        if (empty == 3) {
-            all_empty = 1;
         }
     }
 }

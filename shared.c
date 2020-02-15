@@ -20,6 +20,12 @@ static struct sembuf sem;
 
 static struct Msg msg;
 
+void create_sem_sets(int *buf, int num_sem_sets, int num_sems) {
+    for (int i = 0; i < num_sem_sets; i++) {
+        buf[i] = create_sem_set(num_sems);
+    }
+}
+
 int create_sem_set(int num_sems) {
     int sem_id = semget(IPC_PRIVATE, num_sems, IPC_CREAT | 0600);
     if (sem_id == -1) {
