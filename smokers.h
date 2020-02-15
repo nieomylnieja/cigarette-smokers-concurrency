@@ -5,18 +5,23 @@ struct Smoker {
     int id;
     int smoker_type;
     int agent_queue;
+    int *prices;
     int *cigarette_case;
     int wallet_id;
     int *products_queues;
 };
 
+void receive_message(struct Smoker *smoker);
+
+void buy(struct Smoker *smoker);
+
 void update_prices(struct Smoker *smoker);
 
 void sell(struct Smoker *smoker);
 
-void buy(struct Smoker *smoker);
-
 int smoke_condition_satisfied(struct Smoker *smoker);
+
+int check_if_affordable(struct Smoker *smoker);
 
 void create_cigarette(struct Smoker *smoker);
 

@@ -51,8 +51,8 @@ int get_sem_val(int sem_id, int sem_num) {
     return value;
 }
 
-void sem_op(int sem_id, int op) {
-    sem.sem_num = 0;
+void sem_op(int sem_id, int sem_num, int op) {
+    sem.sem_num = sem_num;
     sem.sem_flg = 0;
     sem.sem_op = op;
 
@@ -74,9 +74,9 @@ int create_mq() {
     return queue;
 }
 
-void send_msg_to_many(int *queue, int type, int value) {
+void send_msg_to_many(int *msq_id, int type, int value) {
     for (int i = 0; i < SMOKERS; i++) {
-        send_msg(*(queue + i), type, value);
+        send_msg(*(msq_id + i), type, value);
     }
 }
 
@@ -89,17 +89,17 @@ int check_queue_size(int msq_id) {
     return (uint)(buf.msg_qnum);
 }
 
-void send_msg(int queue, int type, int value) {
+void send_msg(int msq_id, int type, int value) {
     msg.type = type;
     msg.value = value;
-    if (msgsnd(queue, &msg, sizeof(msg.type), 0) == -1) {
+    if (msgsnd(msq_id, &msg, sizeof(msg.type), 0) == -1) {
         fprintf(stderr, "Error: %s | msgsnd | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }
 }
 
-struct Msg get_msg(int queue) {
-    if (msgrcv(queue, &msg, sizeof(msg), 0, 0) == -1) {
+struct Msg get_msg(int msq_id) {
+    if (msgrcv(msq_id, &msg, sizeof(msg), 0, 0) == -1) {
         fprintf(stderr, "Error: %s | msgrcv | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }

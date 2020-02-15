@@ -19,6 +19,8 @@ int main() {
     create_mqs(agent_smoker_queues, SMOKERS);
     create_sem_sets(wallets, SMOKERS, 2);
 
+    int initial_prices[PRODUCTS] = {2, 2, 2};
+
     if (fork() == 0) {
         struct Agent agent;
         agent.smoker_queues = agent_smoker_queues;
@@ -49,10 +51,11 @@ int main() {
     smoker.agent_queue = *(agent_smoker_queues + smoker_type);
     smoker.cigarette_case = cigarette_case;
     smoker.wallet_id = *(wallets + smoker_type);
+    smoker.prices = initial_prices;
 
     while(1) {
         update_prices(&smoker);
-        sleep(1);
         smoke(&smoker);
+        receive_message(&smoker);
     }
 }
