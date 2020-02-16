@@ -27,8 +27,8 @@ void set_price(struct Agent *agent) {
 void inform_smokers(int *msq_id, int product_type, int price) {
     for (int i = 0; i < SMOKERS; i++) {
         msg.type = INFORM;
-        msg.content[PRODUCT_TYPE] = product_type;
-        msg.content[PRICE] = price;
+        msg.content.product_type = product_type;
+        msg.content.price = price;
         send_msg(*(msq_id + i), msg);
     }
 }

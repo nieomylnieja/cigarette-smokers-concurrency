@@ -30,9 +30,16 @@ struct Product {
 
 extern const struct Product products[PRODUCTS];
 
+struct Content {
+    int sender_type;
+    int wallet_id;
+    int price;
+    int product_type;
+};
+
 struct Msg {
     int type;
-    int content[4];
+    struct Content content;
 };
 
 // SEMAPHORE OPERATIONS

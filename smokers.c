@@ -11,11 +11,11 @@ struct Msg response;
 void update_prices(struct Smoker *smoker) {
     if (check_queue_size(smoker->agent_queue) > 0) {
         agent_msg = get_msg(smoker->agent_queue);
-        *(smoker->prices + agent_msg.content[PRODUCT_TYPE]) = agent_msg.content[PRICE];
+        *(smoker->prices + agent_msg.content.product_type) = agent_msg.content.price;
         printf("%s smoker was informed that %s now costs %d.\n",
                 products[smoker->smoker_type].name,
                 products[smoker->smoker_type].name,
-                agent_msg.content[PRICE]);
+                agent_msg.content.price);
     }
 }
 
@@ -26,10 +26,10 @@ void sell(struct Smoker *smoker) {
         request = get_msg(smoker_queue);
 
         int price = *(smoker->prices + smoker->smoker_type);
-        int buyer_wallet_id = request.content[WALLET_ID];
-        int buyer_queue = *(smoker->exchange_queues + request.content[SENDER_TYPE]);
+        int buyer_wallet_id = request.content.wallet_id;
+        int buyer_queue = *(smoker->exchange_queues + request.content.product_type);
 
-        response.content[SENDER_TYPE] = smoker->smoker_type;
+        response.content.sender_type = smoker->smoker_type;
 
         if (get_sem_val(smoker->wallet_id, WALLET_BLOCK) == 0) {
             sem_op(buyer_wallet_id, WALLET_OP, -price);
@@ -40,7 +40,7 @@ void sell(struct Smoker *smoker) {
 
             printf("%s smoker sold his resource to %s smoker for %d.\n",
                     products[smoker->smoker_type].name,
-                    products[request.content[SENDER_TYPE]].name,
+                    products[request.content.sender_type].name,
                     price);
         } else {
             response.type = TRANSACTION_CANCELLED;
@@ -48,7 +48,7 @@ void sell(struct Smoker *smoker) {
 
             printf("%s smoker can't sell his resource to %s smoker --> price has changed.\n",
                    products[smoker->smoker_type].name,
-                   products[request.content[SENDER_TYPE]].name);
+                   products[request.content.sender_type].name);
         }
     }
 }
@@ -60,13 +60,13 @@ void receive_message(struct Smoker *smoker) {
         response = get_msg(smoker_queue);
 
         if (response.type == PRODUCT_SOLD) {
-            *(smoker->cigarette_case + response.content[SENDER_TYPE]) += 1;
+            *(smoker->cigarette_case + response.content.sender_type) += 1;
 
             printf("%s smoker has bought %s.\n",
                    products[smoker->smoker_type].name,
-                   products[response.content[SENDER_TYPE]].name);
+                   products[response.content.sender_type].name);
         } else if (response.type == TRANSACTION_CANCELLED) {
-            buy_one(response.content[SENDER_TYPE], smoker);
+            buy_one(response.content.sender_type, smoker);
         } else if (response.type == BUY_PRODUCT) {
             sell(smoker);
         }
@@ -85,8 +85,8 @@ void buy(struct Smoker *smoker) {
 
 void buy_one(int product_type, struct Smoker *smoker) {
     request.type = BUY_PRODUCT;
-    request.content[SENDER_TYPE] = smoker->smoker_type;
-    request.content[WALLET_ID] = smoker->wallet_id;
+    request.content.sender_type = smoker->smoker_type;
+    request.content.wallet_id = smoker->wallet_id;
 
     send_msg(*(smoker->exchange_queues + product_type), request);
 }
