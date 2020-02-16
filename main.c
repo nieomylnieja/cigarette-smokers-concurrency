@@ -11,17 +11,19 @@
 int main() {
     srandom(time(NULL));
 
-    int smokers_exchange_queues[PRODUCTS];
     int agent_smoker_queues[SMOKERS];
+    int exchange_queues[PRODUCTS];
     int wallets[SMOKERS];
 
-    create_mqs(smokers_exchange_queues, PRODUCTS);
+    create_mqs(exchange_queues, PRODUCTS);
     create_mqs(agent_smoker_queues, SMOKERS);
-    create_sem_sets(wallets, SMOKERS, 2);
+    create_sem_sets(wallets, SMOKERS, 3);
 
+    int initial_wallets[SMOKERS] = {10, 10, 10};
     int initial_prices[PRODUCTS] = {2, 2, 2};
 
     if (fork() == 0) {
+        printf("AGENT: %d\n", getpid());
         struct Agent agent;
         agent.smoker_queues = agent_smoker_queues;
         agent.wallets = wallets;
@@ -41,6 +43,8 @@ int main() {
         }
     }
 
+    printf("%s: %d\n", products[smoker_type].name, getpid());
+
     struct Smoker smoker;
 
     int cigarette_case[3] = {2, 2, 2};
@@ -52,6 +56,9 @@ int main() {
     smoker.cigarette_case = cigarette_case;
     smoker.wallet_id = *(wallets + smoker_type);
     smoker.prices = initial_prices;
+    smoker.exchange_queues = exchange_queues;
+
+    set_wallet(&smoker, initial_wallets[smoker_type]);
 
     while(1) {
         update_prices(&smoker);

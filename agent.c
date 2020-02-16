@@ -3,6 +3,8 @@
 #include <zconf.h>
 #include "shared.h"
 
+static struct Msg msg;
+
 void set_price(struct Agent *agent) {
     block_all_wallets(agent->wallets);
 
@@ -17,9 +19,18 @@ void set_price(struct Agent *agent) {
     }
     printf("\nAgent set price of %s to %d.\n\n", products[product].name, price);
 
-    send_msg_to_many(agent->smoker_queues, product, price);
+    inform_smokers(agent->smoker_queues, product, price);
 
     make_sure_everyone_was_informed(agent);
+}
+
+void inform_smokers(int *msq_id, int product_type, int price) {
+    for (int i = 0; i < SMOKERS; i++) {
+        msg.type = INFORM;
+        msg.content[PRODUCT_TYPE] = product_type;
+        msg.content[PRICE] = price;
+        send_msg(*(msq_id + i), msg);
+    }
 }
 
 void block_all_wallets(int *wallets) {

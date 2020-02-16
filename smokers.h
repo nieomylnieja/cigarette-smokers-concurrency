@@ -8,12 +8,14 @@ struct Smoker {
     int *prices;
     int *cigarette_case;
     int wallet_id;
-    int *products_queues;
+    int *exchange_queues;
 };
 
 void receive_message(struct Smoker *smoker);
 
 void buy(struct Smoker *smoker);
+
+void buy_one(int product_type, struct Smoker *smoker);
 
 void update_prices(struct Smoker *smoker);
 
@@ -26,5 +28,7 @@ int check_if_affordable(struct Smoker *smoker);
 void create_cigarette(struct Smoker *smoker);
 
 void smoke(struct Smoker *smoker);
+
+void set_wallet(struct Smoker *smoker, int money);
 
 #endif //SMOKERS_SMOKERS_H

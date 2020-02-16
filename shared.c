@@ -9,9 +9,9 @@
 #include <errno.h>
 
 const struct Product products[PRODUCTS] = {
-        {0, "tobacco"},
-        {1, "paper"},
-        {2, "matches"},
+        {TOBACCO, "tobacco"},
+        {PAPER, "paper"},
+        {MATCHES, "matches"},
 };
 
 static struct msqid_ds buf;
@@ -45,7 +45,7 @@ void set_sem_val(int sem_id, int sem_num, int value) {
 int get_sem_val(int sem_id, int sem_num) {
     int value = semctl(sem_id, sem_num, GETVAL);
     if (value == -1) {
-        fprintf(stderr, "Error: %s | semctl - GETVAL| Process: %d\n", strerror(errno), getpid());
+        fprintf(stderr, "Error: %s | semctl - GETVAL | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }
     return value;
@@ -74,12 +74,6 @@ int create_mq() {
     return queue;
 }
 
-void send_msg_to_many(int *msq_id, int type, int value) {
-    for (int i = 0; i < SMOKERS; i++) {
-        send_msg(*(msq_id + i), type, value);
-    }
-}
-
 int check_queue_size(int msq_id) {
     int stats = msgctl(msq_id, IPC_STAT, &buf);
     if (stats == -1) {
@@ -89,10 +83,8 @@ int check_queue_size(int msq_id) {
     return (uint)(buf.msg_qnum);
 }
 
-void send_msg(int msq_id, int type, int value) {
-    msg.type = type;
-    msg.value = value;
-    if (msgsnd(msq_id, &msg, sizeof(msg.type), 0) == -1) {
+void send_msg(int msq_id, struct Msg msg) {
+    if (msgsnd(msq_id, (void *) &msg, sizeof(msg.content), 0) == -1) {
         fprintf(stderr, "Error: %s | msgsnd | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }

@@ -17,4 +17,6 @@ void wait();
 
 void make_sure_everyone_was_informed(struct Agent *agent);
 
+void inform_smokers(int *msq_id, int product_type, int price);
+
 #endif //SMOKERS_AGENT_H

@@ -1,13 +1,27 @@
 #ifndef SMOKERS_SHARED_H
 #define SMOKERS_SHARED_H
-
+// MSG CONTENT
+#define SENDER_TYPE 0
+#define WALLET_ID 1
+#define PRICE 2
+#define PRODUCT_TYPE 3
+// PRODUCT TYPES
+#define TOBACCO 0
+#define MATCHES 1
+#define PAPER 2
+// OTHER
 #define PRODUCTS 3
 #define SMOKERS PRODUCTS
 #define INFINITE 1
-#define BUY_PRODUCT 0
-#define SELL_PRODUCT 1
+// MSG TYPES
+#define INFORM 0
+#define BUY_PRODUCT 1
+#define TRANSACTION_CANCELLED 2
+#define PRODUCT_SOLD 3
+// WALLET SEM OPS
 #define WALLET_BLOCK 0
 #define WALLET_OP 1
+#define PENDING 2
 
 struct Product {
     int id;
@@ -18,7 +32,7 @@ extern const struct Product products[PRODUCTS];
 
 struct Msg {
     int type;
-    int value;
+    int content[4];
 };
 
 // SEMAPHORE OPERATIONS
@@ -37,9 +51,7 @@ void create_mqs(int *buf, int size);
 
 int create_mq();
 
-void send_msg(int msq_id, int type, int value);
-
-void send_msg_to_many(int *msq_id, int type, int value);
+void send_msg(int msq_id, struct Msg msg);
 
 struct Msg get_msg(int msq_id);
 
