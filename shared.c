@@ -10,7 +10,7 @@
 
 const struct Product products[PRODUCTS] = {
         {TOBACCO, "tobacco"},
-        {PAPER, "paper"},
+        {PAPER,   "paper"},
         {MATCHES, "matches"},
 };
 
@@ -80,7 +80,8 @@ int check_queue_size(int msq_id) {
         fprintf(stderr, "Error: %s | msgctl - QNUM | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }
-    return (uint)(buf.msg_qnum);
+    int qnum = (uint) (buf.msg_qnum);
+    return qnum;
 }
 
 void send_msg(int msq_id, struct Msg msg) {
@@ -88,6 +89,7 @@ void send_msg(int msq_id, struct Msg msg) {
         fprintf(stderr, "Error: %s | msgsnd | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }
+    int qsize = check_queue_size(msq_id);
 }
 
 struct Msg get_msg(int msq_id) {

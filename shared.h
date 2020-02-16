@@ -1,10 +1,5 @@
 #ifndef SMOKERS_SHARED_H
 #define SMOKERS_SHARED_H
-// MSG CONTENT
-#define SENDER_TYPE 0
-#define WALLET_ID 1
-#define PRICE 2
-#define PRODUCT_TYPE 3
 // PRODUCT TYPES
 #define TOBACCO 0
 #define MATCHES 1

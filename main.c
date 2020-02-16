@@ -23,14 +23,12 @@ int main() {
     int initial_prices[PRODUCTS] = {2, 2, 2};
 
     if (fork() == 0) {
-        printf("AGENT: %d\n", getpid());
         struct Agent agent;
         agent.smoker_queues = agent_smoker_queues;
         agent.wallets = wallets;
 
         while(1) {
-            set_price(&agent);
-            wait();
+            agent_do(&agent);
         }
     }
 
@@ -43,11 +41,9 @@ int main() {
         }
     }
 
-    printf("%s: %d\n", products[smoker_type].name, getpid());
-
     struct Smoker smoker;
 
-    int cigarette_case[3] = {2, 2, 2};
+    int cigarette_case[3] = {0, 0, 0};
     cigarette_case[smoker_type] = INFINITE;
 
     smoker.id = getpid();
@@ -60,9 +56,9 @@ int main() {
 
     set_wallet(&smoker, initial_wallets[smoker_type]);
 
+    sleep(1);
+
     while(1) {
-        update_prices(&smoker);
-        smoke(&smoker);
-        receive_message(&smoker);
+        smoker_do(&smoker);
     }
 }

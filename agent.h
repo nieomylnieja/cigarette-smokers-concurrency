@@ -9,14 +9,6 @@ struct Agent {
     int *wallets;
 };
 
-void block_all_wallets(int *wallets);
-
-void set_price(struct Agent *agent);
-
-void wait();
-
-void make_sure_everyone_was_informed(struct Agent *agent);
-
-void inform_smokers(int *msq_id, int product_type, int price);
+void agent_do(struct Agent *agent);
 
 #endif //SMOKERS_AGENT_H
