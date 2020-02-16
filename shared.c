@@ -84,7 +84,7 @@ int check_queue_size(int msq_id) {
 }
 
 void send_msg(int msq_id, struct Msg msg) {
-    if (msgsnd(msq_id, (void *) &msg, sizeof(msg.content), 0) == -1) {
+    if (msgsnd(msq_id, &msg, sizeof(msg), 0) == -1) {
         fprintf(stderr, "Error: %s | msgsnd | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }

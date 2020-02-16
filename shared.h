@@ -13,11 +13,11 @@
 #define PRODUCTS 3
 #define SMOKERS PRODUCTS
 #define INFINITE 1
-// MSG TYPES
-#define INFORM 0
-#define BUY_PRODUCT 1
-#define TRANSACTION_CANCELLED 2
-#define PRODUCT_SOLD 3
+// MSG TYPES (must be > 0)
+#define INFORM 1
+#define BUY_PRODUCT 2
+#define TRANSACTION_CANCELLED 3
+#define PRODUCT_SOLD 4
 // WALLET SEM OPS
 #define WALLET_BLOCK 0
 #define WALLET_OP 1
