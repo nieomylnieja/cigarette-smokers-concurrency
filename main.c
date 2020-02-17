@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <zconf.h>
 #include "smokers.h"
 #include "agent.h"
