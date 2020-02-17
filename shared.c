@@ -10,9 +10,9 @@
 
 
 const struct Smokers smokers[SMOKERS] = {
-        {TOBACCO, "tobacco"},
-        {PAPER,   "paper"},
-        {MATCHES, "matches"},
+        {TOBACCO, "tobacco", CYAN},
+        {PAPER,   "paper", MAGENTA},
+        {MATCHES, "matches", BLUE},
 };
 
 static int colors[4] = {36, 35, 34, 33};

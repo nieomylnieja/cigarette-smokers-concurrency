@@ -26,7 +26,10 @@
 struct Smokers {
     int id;
     char *name;
+    int text_color;
 };
+
+extern int verbose;
 
 extern const struct Smokers smokers[PRODUCTS];
 

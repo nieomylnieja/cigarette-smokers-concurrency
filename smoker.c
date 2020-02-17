@@ -21,7 +21,7 @@ void create_cigarette(struct Smoker *smoker);
 
 void smoke(struct Smoker *smoker);
 
-char text_buf[50];
+char text_buf[80];
 
 void smoker_do(struct Smoker *smoker) {
     update_prices(smoker);
@@ -35,11 +35,14 @@ void update_prices(struct Smoker *smoker) {
     if (check_queue_size(smoker->agent_queue) > 0) {
         agent_msg = get_msg(smoker->agent_queue);
         *(smoker->prices + agent_msg.content.product_type) = agent_msg.content.price;
-        sprintf(text_buf, "%s smoker was informed that %s now costs %d.",
-               smokers[smoker->smoker_type].name,
-               smokers[smoker->smoker_type].name,
-               agent_msg.content.price);
-        color_print(text_buf, smoker->text_color);
+
+        if (verbose == 1) {
+            sprintf(text_buf, "%s smoker was informed that %s now costs %d.",
+                    smokers[smoker->smoker_type].name,
+                    smokers[smoker->smoker_type].name,
+                    agent_msg.content.price);
+            color_print(text_buf, smoker->text_color);
+        }
     }
 }
 
@@ -59,13 +62,21 @@ void sell(struct Smoker *smoker, struct Msg request) {
         response.type = PRODUCT_SOLD;
         send_msg(buyer_queue, response);
 
-        sprintf(text_buf, "%s smoker sold his resource to %s smoker for %d.",
-               smokers[smoker->smoker_type].name,
-               smokers[request.content.sender_type].name,
-               price);
-        color_print(text_buf, smoker->text_color);
+        if (verbose == 1) {
+            sprintf(text_buf, "%s smoker sold his resource to %s smoker for %d.",
+                    smokers[smoker->smoker_type].name,
+                    smokers[request.content.sender_type].name,
+                    price);
+            color_print(text_buf, smoker->text_color);
+        }
     } else {
         response.type = TRANSACTION_CANCELLED;
+        if (verbose == 1) {
+            sprintf(text_buf, "%s <--> %s smokers transaction was cancelled due to price change.",
+                    smokers[smoker->smoker_type].name,
+                    smokers[request.content.sender_type].name);
+            color_print(text_buf, smoker->text_color);
+        }
         send_msg(buyer_queue, response);
     }
 }
@@ -80,10 +91,12 @@ void receive_message(struct Smoker *smoker) {
         if (request.type == PRODUCT_SOLD) {
             *(smoker->cigarette_case + request.content.sender_type) += 1;
 
-            sprintf(text_buf, "%s smoker has bought %s.",
-                   smokers[smoker->smoker_type].name,
-                   smokers[request.content.sender_type].name);
-            color_print(text_buf, smoker->text_color);
+            if (verbose == 1) {
+                sprintf(text_buf, "%s smoker has bought %s.",
+                        smokers[smoker->smoker_type].name,
+                        smokers[request.content.sender_type].name);
+                color_print(text_buf, smoker->text_color);
+            }
         } else if (request.type == TRANSACTION_CANCELLED) {
             buy_one(request.content.sender_type, smoker);
         } else if (request.type == BUY_PRODUCT) {
@@ -100,8 +113,10 @@ void buy(struct Smoker *smoker) {
 
     for (int i = 0; i < PRODUCTS; i++) {
         if (i != smoker->smoker_type) {
-            sprintf(text_buf, "%s is trying to buy %s", smokers[smoker->smoker_type].name, smokers[i].name);
-            color_print(text_buf, smoker->text_color);
+            if (verbose == 1) {
+                sprintf(text_buf, "%s is trying to buy %s", smokers[smoker->smoker_type].name, smokers[i].name);
+                color_print(text_buf, smoker->text_color);
+            }
             buy_one(i, smoker);
         }
     }

@@ -6,8 +6,13 @@
 #include <stdlib.h>
 #include "shared.h"
 
+int verbose;
 
-int main() {
+void set_flags(int argc, char **argv);
+
+int main(int argc, char **argv) {
+    set_flags(argc, argv);
+
     srandom(time(NULL));
 
     int agent_smoker_queues[SMOKERS];
@@ -27,14 +32,14 @@ int main() {
         agent.wallets = wallets;
         agent.text_color = YELLOW;
 
-        while(1) {
+        while (1) {
             agent_do(&agent);
         }
     }
 
     int smoker_type = smokers[0].id;
 
-    for(int i = 1; i < SMOKERS; i++) {
+    for (int i = 1; i < SMOKERS; i++) {
         if (fork() == 0) {
             smoker_type = smokers[i].id;
             break;
@@ -53,13 +58,29 @@ int main() {
     smoker.wallet_id = *(wallets + smoker_type);
     smoker.prices = initial_prices;
     smoker.exchange_queues = exchange_queues;
-    smoker.text_color = smoker_type;
+    smoker.text_color = smokers[smoker_type].text_color;
 
     set_wallet(&smoker, initial_wallets[smoker_type]);
 
     sleep(1);
 
-    while(1) {
+    while (1) {
         smoker_do(&smoker);
+    }
+}
+
+void set_flags(int argc, char **argv) {
+    int option;
+    while ((option = getopt(argc, argv, "v")) != -1) {
+        switch (option) {
+            case 'v':
+                verbose = 1;
+                color_print("USING VERBOSE", YELLOW);
+                break;
+            default :
+                verbose = 0;
+                color_print("USING NON-VERBOSE", YELLOW);
+                break;
+        }
     }
 }
