@@ -21,7 +21,7 @@ void create_cigarette(struct Smoker *smoker);
 
 void smoke(struct Smoker *smoker);
 
-char text_buf[30];
+char text_buf[50];
 
 void smoker_do(struct Smoker *smoker) {
     update_prices(smoker);

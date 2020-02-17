@@ -92,7 +92,6 @@ void send_msg(int msq_id, struct Msg msg) {
         fprintf(stderr, "Error: %s | msgsnd | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }
-    int qsize = check_queue_size(msq_id);
 }
 
 struct Msg get_msg(int msq_id) {
