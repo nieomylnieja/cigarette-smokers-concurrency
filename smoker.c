@@ -1,6 +1,7 @@
 #include <zconf.h>
-#include "smokers.h"
+#include "smoker.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "shared.h"
 
 
@@ -20,6 +21,7 @@ void create_cigarette(struct Smoker *smoker);
 
 void smoke(struct Smoker *smoker);
 
+char text_buf[30];
 
 void smoker_do(struct Smoker *smoker) {
     update_prices(smoker);
@@ -33,10 +35,11 @@ void update_prices(struct Smoker *smoker) {
     if (check_queue_size(smoker->agent_queue) > 0) {
         agent_msg = get_msg(smoker->agent_queue);
         *(smoker->prices + agent_msg.content.product_type) = agent_msg.content.price;
-        printf("%s smoker was informed that %s now costs %d.\n",
-               products[smoker->smoker_type].name,
-               products[smoker->smoker_type].name,
+        sprintf(text_buf, "%s smoker was informed that %s now costs %d.",
+               smokers[smoker->smoker_type].name,
+               smokers[smoker->smoker_type].name,
                agent_msg.content.price);
+        color_print(text_buf, smoker->text_color);
     }
 }
 
@@ -56,10 +59,11 @@ void sell(struct Smoker *smoker, struct Msg request) {
         response.type = PRODUCT_SOLD;
         send_msg(buyer_queue, response);
 
-        printf("%s smoker sold his resource to %s smoker for %d.\n",
-               products[smoker->smoker_type].name,
-               products[request.content.sender_type].name,
+        sprintf(text_buf, "%s smoker sold his resource to %s smoker for %d.",
+               smokers[smoker->smoker_type].name,
+               smokers[request.content.sender_type].name,
                price);
+        color_print(text_buf, smoker->text_color);
     } else {
         response.type = TRANSACTION_CANCELLED;
         send_msg(buyer_queue, response);
@@ -76,15 +80,17 @@ void receive_message(struct Smoker *smoker) {
         if (request.type == PRODUCT_SOLD) {
             *(smoker->cigarette_case + request.content.sender_type) += 1;
 
-            printf("%s smoker has bought %s.\n",
-                   products[smoker->smoker_type].name,
-                   products[request.content.sender_type].name);
+            sprintf(text_buf, "%s smoker has bought %s.",
+                   smokers[smoker->smoker_type].name,
+                   smokers[request.content.sender_type].name);
+            color_print(text_buf, smoker->text_color);
         } else if (request.type == TRANSACTION_CANCELLED) {
             buy_one(request.content.sender_type, smoker);
         } else if (request.type == BUY_PRODUCT) {
             sell(smoker, request);
         } else {
-            printf("we shouldn't be here\n");
+            perror("That line of code shouldn't have been reached! [smoker.c:92]\n");
+            exit(EXIT_FAILURE);
         }
     }
 }
@@ -94,7 +100,8 @@ void buy(struct Smoker *smoker) {
 
     for (int i = 0; i < PRODUCTS; i++) {
         if (i != smoker->smoker_type) {
-            printf("%s is trying to buy %s\n", products[smoker->smoker_type].name, products[i].name);
+            sprintf(text_buf, "%s is trying to buy %s", smokers[smoker->smoker_type].name, smokers[i].name);
+            color_print(text_buf, smoker->text_color);
             buy_one(i, smoker);
         }
     }
@@ -126,7 +133,8 @@ void smoke(struct Smoker *smoker) {
     if (smoke_condition_satisfied(smoker) == 1) {
         set_sem_val(smoker->wallet_id, PENDING, 0);
         create_cigarette(smoker);
-        printf("%s is now smoking\n", products[smoker->smoker_type].name);
+        sprintf(text_buf, "%s is now smoking", smokers[smoker->smoker_type].name);
+        color_print(text_buf, smoker->text_color);
         sleep(get_random(2, 8));
     } else if (check_if_affordable(smoker) == 1 && get_sem_val(smoker->wallet_id, PENDING) == 0) {
         buy(smoker);

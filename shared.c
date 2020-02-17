@@ -8,11 +8,14 @@
 #include <string.h>
 #include <errno.h>
 
-const struct Product products[PRODUCTS] = {
+
+const struct Smokers smokers[SMOKERS] = {
         {TOBACCO, "tobacco"},
         {PAPER,   "paper"},
         {MATCHES, "matches"},
 };
+
+static int colors[4] = {36, 35, 34, 33};
 
 static struct msqid_ds buf;
 
@@ -102,4 +105,10 @@ struct Msg get_msg(int msq_id) {
 
 int get_random(int min, int max) {
     return (random() % (max - min + 1)) + min;
+}
+
+void color_print(char *text, int color) {
+    printf("\033[0;%dm", colors[color]);
+    printf("%s\n", text);
+    printf("\033[0m");
 }

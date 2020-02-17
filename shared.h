@@ -1,5 +1,10 @@
 #ifndef SMOKERS_SHARED_H
 #define SMOKERS_SHARED_H
+// COLORS
+#define CYAN 0
+#define MAGENTA 1
+#define BLUE 2
+#define YELLOW 3
 // PRODUCT TYPES
 #define TOBACCO 0
 #define MATCHES 1
@@ -18,12 +23,12 @@
 #define WALLET_OP 1
 #define PENDING 2
 
-struct Product {
+struct Smokers {
     int id;
     char *name;
 };
 
-extern const struct Product products[PRODUCTS];
+extern const struct Smokers smokers[PRODUCTS];
 
 struct Content {
     int sender_type;
@@ -36,6 +41,9 @@ struct Msg {
     int type;
     struct Content content;
 };
+
+// SETUP
+void setup(struct Smokers *smokers[PRODUCTS]);
 
 // SEMAPHORE OPERATIONS
 void create_sem_sets(int *buf, int num_sem_sets, int num_sems);
@@ -61,5 +69,7 @@ int check_queue_size(int msq_id);
 
 // UTILS
 int get_random(int min, int max);
+
+void color_print(char *text, int color);
 
 #endif //SMOKERS_SHARED_H

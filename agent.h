@@ -7,6 +7,7 @@ struct Agent {
     int matches_price;
     int *smoker_queues;
     int *wallets;
+    int text_color;
 };
 
 void agent_do(struct Agent *agent);

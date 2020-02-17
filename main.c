@@ -1,5 +1,5 @@
 #include <zconf.h>
-#include "smokers.h"
+#include "smoker.h"
 #include "agent.h"
 #include <string.h>
 #include <time.h>
@@ -25,17 +25,18 @@ int main() {
         struct Agent agent;
         agent.smoker_queues = agent_smoker_queues;
         agent.wallets = wallets;
+        agent.text_color = YELLOW;
 
         while(1) {
             agent_do(&agent);
         }
     }
 
-    int smoker_type = products[0].id;
+    int smoker_type = smokers[0].id;
 
     for(int i = 1; i < SMOKERS; i++) {
         if (fork() == 0) {
-            smoker_type = products[i].id;
+            smoker_type = smokers[i].id;
             break;
         }
     }
@@ -52,6 +53,7 @@ int main() {
     smoker.wallet_id = *(wallets + smoker_type);
     smoker.prices = initial_prices;
     smoker.exchange_queues = exchange_queues;
+    smoker.text_color = smoker_type;
 
     set_wallet(&smoker, initial_wallets[smoker_type]);
 

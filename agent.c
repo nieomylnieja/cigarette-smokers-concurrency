@@ -3,7 +3,6 @@
 #include <zconf.h>
 #include "shared.h"
 
-static struct Msg msg;
 
 void block_all_wallets(int *wallets);
 
@@ -15,6 +14,9 @@ void make_sure_everyone_was_informed(struct Agent *agent);
 
 void inform_smokers(int *msq_id, int product_type, int price);
 
+static struct Msg msg;
+
+char text_buf[30];
 
 void agent_do(struct Agent *agent) {
     set_price(agent);
@@ -33,7 +35,9 @@ void set_price(struct Agent *agent) {
     } else if (product == 2) {
         agent->matches_price = price;
     }
-    printf("\nAgent set price of %s to %d.\n\n", products[product].name, price);
+
+    sprintf(text_buf, "\nAgent set price of %s to %d.\n", smokers[product].name, price);
+    color_print(text_buf, agent->text_color);
 
     inform_smokers(agent->smoker_queues, product, price);
 
