@@ -127,4 +127,4 @@ not complied with the conventions nor styles of `C-programming` as it is not a l
 nevertheless I did my best to give functions, structures and constants meaningful names so hopefuly You, dear 
 reader will find that small peace of code pleasant to read.
 
-######*Made by Mateusz Hawrus, for Poznan University of Technology, Concurrent Programming Course.*
+###### *Made by Mateusz Hawrus, for Poznan University of Technology, Concurrent Programming Course.*
