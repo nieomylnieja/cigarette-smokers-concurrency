@@ -4,17 +4,17 @@
 [Source in polish](http://www.cs.put.poznan.pl/dwawrzyniak/PW/projekty.html#pieciu-kucharzy)
 
 I assume here that the reader is familiar with the classic [problem](https://en.wikipedia.org/wiki/Cigarette_smokers_problem)
-###Classic
+### Classic
 The classic cigarette smokers problem assumes the role of an `Agent` as a dealer of goods for the `Smokers`.
 `Agent` randomly chooses two of the three products and puts it on a table. It is up to the individual `Smoker`
 to decide whether the pair displayed on the `table` (which btw. is probably a `shmseg`) suits him or not.
 `Agent's` role then boils down to blocking the `table` during the change while `Smokers` have to stay idle
 up until the moment the pair of products they need appears.
-###Enhanced
+### Enhanced
 As we've seen above, there's really not much going on there. A `semaphore` for the `table`, one `shmseg`,
 to have store it's contents, and that's it. Let's look at the buffed-up version :)
 
-####Description
+#### Description
  - `Smokers` are buying products from each other at the current stock exchange price;
  - `Agent's` role is to randomly (both price, product and time interval) set the stock prices;
  - `Smokers` are not allowed to have nay debt, so at any given time their `wallet` cannot contain;
@@ -24,10 +24,10 @@ to have store it's contents, and that's it. Let's look at the buffed-up version 
  - `Smoker` buys both products at the same time;
  - `msq` has to be used for transactions;
 
-####Technical overview of the solution
+#### Technical overview of the solution
 
-#####Agent
-######Structure
+##### Agent
+###### Structure
 ```c
 struct Agent {
     int tobacco_price;
@@ -38,7 +38,7 @@ struct Agent {
     int text_color;
 };
 ```
-######Important functions
+###### Important functions
 ```c
 void set_price(struct Agent *agent);                            # set the randomized price for randomized product
 
@@ -46,8 +46,8 @@ void inform_smokers(int *msq_id, int product_type, int price);  # inform every s
 
 void block_all_wallets(int *wallets);                           # set a semaphore untill every smoker has been informed about the price change
 ```
-#####Smoker
-######Structure
+##### Smoker
+###### Structure
 ```c
 struct Smoker {
     int id;
@@ -60,7 +60,7 @@ struct Smoker {
     int text_color;
 };
 ```
-######Important functions
+###### Important functions
 ```c
 void buy(struct Smoker *smoker);                # send buy requests to the respective smokers
     
@@ -68,7 +68,7 @@ void smoke(struct Smoker *smoker);              # smoke if the products needed t
 
 void receive_message(struct Smoker *smoker);    # check exchange message queue for any messages - no priority, just pop
 ```
-#####Message
+##### Message
 ```c
 struct Msg {
     int type;
@@ -80,10 +80,10 @@ struct Msg {
     }
 };
 ```
-####Communication flow:
-######UML
+#### Communication flow:
+###### UML
 ![alt text](UML.png)
-######Description
+###### Description
 I will go here with an example cycle from a perspective of a `tobbaco` `Smoker`
 
 Our `Smoker` starts with a certain ammount of money in his wallet. In each loop he does three things in a 
