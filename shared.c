@@ -83,7 +83,7 @@ int check_queue_size(int msq_id) {
         fprintf(stderr, "Error: %s | msgctl - QNUM | Process: %d\n", strerror(errno), getpid());
         exit(EXIT_FAILURE);
     }
-    int qnum = (uint) (buf.msg_qnum);
+    int qnum = (int) (buf.msg_qnum);
     return qnum;
 }
 
