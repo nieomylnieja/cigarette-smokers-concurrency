@@ -9,7 +9,7 @@ void receive_message(struct Smoker *smoker);
 
 void buy(struct Smoker *smoker);
 
-void buy_one(int product_type, struct Smoker *smoker);
+void buy_one(int p_type, struct Smoker *smoker);
 
 void update_prices(struct Smoker *smoker);
 
@@ -91,7 +91,7 @@ void receive_message(struct Smoker *smoker) {
         request = get_msg(smoker_queue);
 
         if (request.type == PRODUCT_SOLD) {
-            *(smoker->cigarette_case + request.content.sender_type) += 1;
+            (smoker->cigarette_case + request.content.sender_type)->value += 1;
 
             if (verbose == 1) {
                 sprintf(text_buf, "%s smoker has bought %s.",
@@ -100,7 +100,7 @@ void receive_message(struct Smoker *smoker) {
                 color_print(text_buf, smoker->text_color);
             }
         } else if (request.type == TRANSACTION_CANCELLED) {
-            buy_one(request.content.sender_type, smoker);
+            (smoker->cigarette_case + request.content.sender_type)->status = FREE;
         } else if (request.type == BUY_PRODUCT) {
             sell(smoker, request);
         } else {
@@ -111,33 +111,35 @@ void receive_message(struct Smoker *smoker) {
 }
 
 void buy(struct Smoker *smoker) {
-    set_sem_val(smoker->wallet_id, PENDING, 1);
-
-    for (int i = 0; i < PRODUCTS; i++) {
-        if (i != smoker->smoker_type) {
+    for (int p_type = 0; p_type < PRODUCTS; p_type++) {
+        if ((p_type != smoker->smoker_type) && (smoker->cigarette_case + p_type)->status != PENDING) {
             if (verbose == 1) {
-                sprintf(text_buf, "%s is trying to buy %s", smokers[smoker->smoker_type].name, smokers[i].name);
+                sprintf(text_buf, "%s is trying to buy %s",
+                        smokers[smoker->smoker_type].name,
+                        smokers[p_type].name);
                 color_print(text_buf, smoker->text_color);
             }
-            buy_one(i, smoker);
+            buy_one(p_type, smoker);
         }
     }
 }
 
-void buy_one(int product_type, struct Smoker *smoker) {
+void buy_one(int p_type, struct Smoker *smoker) {
+    (smoker->cigarette_case + p_type)->status = PENDING;
+
     struct Msg request;
     request.type = BUY_PRODUCT;
     request.content.sender_type = smoker->smoker_type;
     request.content.wallet_id = smoker->wallet_id;
 
-    send_msg(*(smoker->exchange_queues + product_type), request);
+    send_msg(*(smoker->exchange_queues + p_type), request);
 }
 
 int check_if_affordable(struct Smoker *smoker) {
     int sum = 0;
-    for (int i = 0; i < PRODUCTS; i++) {
-        if (i != smoker->smoker_type) {
-            sum += *(smoker->prices + i);
+    for (int p_type = 0; p_type < PRODUCTS; p_type++) {
+        if ((p_type != smoker->smoker_type) && ((smoker->cigarette_case + p_type)->status != PENDING)) {
+            sum += *(smoker->prices + p_type);
         }
     }
     if (get_sem_val(smoker->wallet_id, WALLET_OP) < sum) {
@@ -146,28 +148,20 @@ int check_if_affordable(struct Smoker *smoker) {
     return 1;
 }
 
-int check_if_affordable_one(struct Smoker *smoker, int product) {
-    if (get_sem_val(smoker->wallet_id, WALLET_OP) < *(smoker->prices + product)) {
-        return 0;
-    }
-    return 1;
-}
-
 void smoke(struct Smoker *smoker) {
     if (smoke_condition_satisfied(smoker) == 1) {
-        set_sem_val(smoker->wallet_id, PENDING, 0);
         create_cigarette(smoker);
         sprintf(text_buf, "%s is now smoking", smokers[smoker->smoker_type].name);
         color_print(text_buf, smoker->text_color);
         sleep(get_random(2, 8));
-    } else if (check_if_affordable(smoker) == 1 && get_sem_val(smoker->wallet_id, PENDING) == 0) {
+    } else if (check_if_affordable(smoker) == 1) {
         buy(smoker);
     }
 }
 
 int smoke_condition_satisfied(struct Smoker *smoker) {
     for (int i = 0; i < PRODUCTS; i++) {
-        if (*(smoker->cigarette_case + i) == 0) {
+        if ((smoker->cigarette_case + i)->value == 0) {
             return 0;
         }
     }
@@ -177,7 +171,8 @@ int smoke_condition_satisfied(struct Smoker *smoker) {
 void create_cigarette(struct Smoker *smoker) {
     for (int i = 0; i < PRODUCTS; i++) {
         if (i != smoker->smoker_type) {
-            *(smoker->cigarette_case + i) -= 1;
+            (smoker->cigarette_case + i)->status = FREE;
+            (smoker->cigarette_case + i)->value -= 1;
         }
     }
 }

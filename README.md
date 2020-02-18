@@ -80,7 +80,7 @@ struct Msg {
     }
 };
 ```
-#### Communication flow:
+#### Communication flow
 ###### UML
 ![alt text](UML.png)
 ###### Description

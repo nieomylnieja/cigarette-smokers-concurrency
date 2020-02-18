@@ -48,8 +48,12 @@ int main(int argc, char **argv) {
 
     struct Smoker smoker;
 
-    int cigarette_case[3] = {0, 0, 0};
-    cigarette_case[smoker_type] = INFINITE;
+    struct Product cigarette_case[PRODUCTS] = {
+            {0, FREE},
+            {0, FREE},
+            {0, FREE},
+    };
+    cigarette_case[smoker_type].value = INFINITE;
 
     smoker.id = getpid();
     smoker.smoker_type = smoker_type;

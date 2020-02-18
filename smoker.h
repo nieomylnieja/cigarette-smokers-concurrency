@@ -1,12 +1,17 @@
 #ifndef SMOKERS_SMOKER_H
 #define SMOKERS_SMOKER_H
 
+struct Product {
+    int value;
+    int status;
+};
+
 struct Smoker {
     int id;
     int smoker_type;
     int agent_queue;
     int *prices;
-    int *cigarette_case;
+    struct Product *cigarette_case;
     int wallet_id;
     int *exchange_queues;
     int text_color;

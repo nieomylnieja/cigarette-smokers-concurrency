@@ -1,5 +1,8 @@
 #ifndef SMOKERS_SHARED_H
 #define SMOKERS_SHARED_H
+// CIG CASE
+#define FREE 0
+#define PENDING 1
 // COLORS
 #define CYAN 0
 #define MAGENTA 1
@@ -21,7 +24,6 @@
 // WALLET SEM OPS
 #define WALLET_BLOCK 0
 #define WALLET_OP 1
-#define PENDING 2
 
 struct Smokers {
     int id;
