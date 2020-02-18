@@ -1,4 +1,4 @@
-TARGET = main
+TARGET = smokers
 LIBS = -lm
 CC = gcc
 CFLAGS = -g -Wall

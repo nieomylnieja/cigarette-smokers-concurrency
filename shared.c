@@ -11,7 +11,7 @@
 
 const struct Smokers smokers[SMOKERS] = {
         {TOBACCO, "tobacco", CYAN},
-        {PAPER,   "paper", MAGENTA},
+        {PAPER,   "paper",   MAGENTA},
         {MATCHES, "matches", BLUE},
 };
 

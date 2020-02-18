@@ -8,4 +8,4 @@ COPY . .
 
 RUN make all
 
-CMD ["/project/./main"
+CMD ["./smokers"
