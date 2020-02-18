@@ -1,6 +1,6 @@
-#include <zconf.h>
 #include "smoker.h"
 #include "agent.h"
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
