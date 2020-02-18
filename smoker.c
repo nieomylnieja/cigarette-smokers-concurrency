@@ -1,7 +1,7 @@
-#include <zconf.h>
 #include "smoker.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "shared.h"
 
 
