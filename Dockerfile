@@ -8,4 +8,4 @@ COPY . .
 
 RUN make all
 
-CMD ["./smokers"
+CMD ["./smokers"]

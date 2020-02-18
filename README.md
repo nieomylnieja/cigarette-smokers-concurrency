@@ -1,4 +1,18 @@
-# Cigarette Smokers Problem
+# Cigarette Smokers Problem - Extended
+
+## Running the program
+#### Locally
+```
+$ make all
+$ ./smokers
+```
+#### Docker
+```
+$ docker build . --tag=smokers
+$ docker run -it smokers
+```
+## The Problem
+
 ##### Concurrency library used ~ SYSTEM V IPC
 
 [Source in polish](http://www.cs.put.poznan.pl/dwawrzyniak/PW/projekty.html#pieciu-kucharzy)
@@ -88,10 +102,29 @@ I will go here with an example cycle from a perspective of a `tobbaco` `Smoker`
 
 Our `Smoker` starts with a certain ammount of money in his wallet. In each loop he does three things in a 
 given order:
-1. Check agent's message queue for price change info
+1. Check agent's message queue for price change info.
 2. Smoke, or at least try to. What happens here is that the `Smoker` checks if he has sufficeint products
 to make a cig, If not he will check If he has money for both of the items and use `buy` to send requests to
 the rest of the smokers.
 3. Check his exchange queue for any messages and handle them accordingly. It can either `buy` request from
 another smoker, `failed transaction`, which just means that the price was changed during the request and needs 
 to be reevaluated or `sold` message with a requested item.
+
+What is being set up:
+1. Private `queues` for `Agent` <--> `Smoker` communication.
+2. Public exchange `queues` assigned to each `Smoker`.
+3. Wallets `semaphores` sets each with two `semaphores`: `WALLET_OP` and  `WALLET_BLOCK`. The first one
+stores the money of the associated `Smoker` and the second one is accessed by `Agent` to block the operations
+for a specific `Smoker`. This means that one `Smoker` can already be performing buying/selling operations
+while other might still be blocked due to smoking process for example.
+4. `Cigarette Case` which is a `struct` of two: `int value` and `int status`. Value defines how much of a given
+resource does our `Smoker` has, and status is a flag set when the product request is being sent, and unset when
+there's no request pending for that product.
+5. Initial prices for products.
+
+I don't want to go far into the details here as the code should be self explanatory. I certainly have 
+not complied with the conventions nor styles of `C-programming` as it is not a language I am acquainted with, 
+nevertheless I did my best to give functions, structures and constants meaningful names so hopefuly You, dear 
+reader will find that small peace of code pleasant to read.
+
+######*Made by Mateusz Hawrus, for Poznan University of Technology, Concurrent Programming Course.*
