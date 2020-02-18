@@ -11,6 +11,14 @@ $ ./smokers
 $ docker build . --tag=smokers
 $ docker run -it smokers
 ```
+#### Flags
+###### For verbose output
+![alt text](verbose.png)
+```
+$ ./smokers -v
+$ docker run -it smokers -v
+```
+
 ## The Problem
 
 ##### Concurrency library used ~ SYSTEM V IPC
