@@ -21,6 +21,8 @@ void create_cigarette(struct Smoker *smoker);
 
 void smoke(struct Smoker *smoker);
 
+int check_if_affordable_one(struct Smoker *smoker, int product);
+
 char text_buf[80];
 
 void smoker_do(struct Smoker *smoker) {
@@ -139,6 +141,13 @@ int check_if_affordable(struct Smoker *smoker) {
         }
     }
     if (get_sem_val(smoker->wallet_id, WALLET_OP) < sum) {
+        return 0;
+    }
+    return 1;
+}
+
+int check_if_affordable_one(struct Smoker *smoker, int product) {
+    if (get_sem_val(smoker->wallet_id, WALLET_OP) < *(smoker->prices + product)) {
         return 0;
     }
     return 1;
